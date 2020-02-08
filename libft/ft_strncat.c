@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strcat.c                                        :+:      :+:    :+:   */
+/*   ft_strncat.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wtorwold <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: wtorwold <wtorwold@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/21 17:12:05 by wtorwold          #+#    #+#             */
-/*   Updated: 2018/12/21 17:54:47 by wtorwold         ###   ########.fr       */
+/*   Updated: 2020/02/08 14:45:25 by wtorwold         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 char	*ft_strncat(char *dst, const char *src, size_t n)
 {
 	size_t	i;
-	int		len;
+	unsigned int		len;
 
 	i = 0;
 	len = ft_strlen(dst);

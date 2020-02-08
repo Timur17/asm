@@ -20,29 +20,6 @@ int		check_command(t_parce *pr)
 	return (0);
 }
 
-t_code			*check_wait_label(t_parce *pr)
-{
-	t_code	*temp;
-
-	temp = pr->cd;
-	while (temp)
-	{
-		if (temp->wait_code == 1)
-			return (temp);
-		temp = temp->next;
-	}
-	return (NULL);
-}
-
-void	add_cmnd(t_parce *pr, t_code *temp, int i)
-{
-	while ((temp = check_wait_label(pr)))
-	{
-		temp->cmnd = ft_strsub(pr->line, *pr->i, i);
-		temp->wait_code = 0;
-	}
-}
-
 void	add_command(t_parce *pr)
 {
 	int		i;
@@ -50,15 +27,10 @@ void	add_command(t_parce *pr)
 	t_code	*temp;
 	
 	i = check_command(pr);
-//	printf("%s\n", pr->line + *pr->i + i);
-	if ((temp = check_wait_label(pr)))
-		add_cmnd(pr, temp, i);
-	//	while ((temp = check_wait_label(pr)))
-	//			temp->cmnd = ft_strsub(pr->line, *pr->i, i);
-	else
-	{
-		new = init_code();
-		new->cmnd = ft_strsub(pr->line, *pr->i, i);
-		creat_list(pr, new);
-	}
+	new = init_code();
+	new->cmnd = ft_strsub(pr->line, *pr->i, i);
+	new->l_conect = pr->cnt++;
+	*pr->i = *pr->i + i;
+	check_arg(pr, new);
+	creat_list(pr, new);
 }

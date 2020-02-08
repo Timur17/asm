@@ -7,7 +7,7 @@ void	printt_code(t_code *cd)
 	temp = cd;
 	while (temp)
 	{
-		printf("%s %s \n", temp->label, temp->cmnd);
+		printf("%s %s %d\n", temp->label, temp->cmnd, temp->l_conect);
 		temp = temp->next;
 	}
 }	
@@ -35,11 +35,12 @@ void	add_label(t_parce *pr)
 	i = check_label(pr);
 	new = init_code();
 	new->label = ft_strsub(pr->line, *pr->i, i);
-	new->wait_code = 1;
+	new->l_conect = pr->cnt;
+//	new->wait_code = 1;
 	creat_list(pr, new);
 	*pr->i =  i + 1;
 	ft_skip_space(pr);
-	if (pr->line[*pr->i])
+	if (pr->line[*pr->i] && pr->line[*pr->i] != COMMENT_CHAR)
 		{
 			if (check_command(pr) == 0)
 			{

@@ -18,8 +18,8 @@ typedef struct			s_token
 
 typedef struct			s_code
 {
+	int					l_conect;
 	char				*label;
-	int					wait_code;
 	char				*cmnd;
 	char				*ar1;
 	char				*ar2;
@@ -29,8 +29,7 @@ typedef struct			s_code
 
 typedef struct              s_parce
 {
-	char					*name;
-	char					*comment;
+	int						cnt;
 	int						fd;
 	char					*line;
 	int						row;
@@ -39,15 +38,18 @@ typedef struct              s_parce
 	t_code					*cd;
 }							t_parce;
 
-void						parce(t_parce *pr);
+void						parce(t_parce *pr, header_t *head);
 void						ft_error(char *str);
 int							check_label(t_parce *pr);
 int							check_command(t_parce *pr);
+void						check_arg(t_parce *pr, t_code *new);
 void						add_label(t_parce *pr);
 void						add_command(t_parce *pr);
 t_code						*init_code();
 void						creat_list(t_parce *pr, t_code *new);
 void						ft_skip_space(t_parce *pr);
+
+int							skip_comment(t_parce *pr);
 
 
 

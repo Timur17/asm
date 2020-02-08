@@ -1,11 +1,15 @@
-.name		"Mikael Blomkvist" 
-.comment	"Hans-Erik Wennerstrom is a liar!"
 
-
+.name		"Mikael Blomkvis"  #h
+     # Executable code
 # Executable code
-label:
-maker:
-ss: live123
-#ld	%1,			r2	# Store operator code of live
-
-
+.comment	"Hans-Erik Wennerstrom is a liar!"#h
+    # Executable code
+        #    Executable code
+ # Executable code
+live %33333 , %:maker,      %44
+label: live r1      
+maker: #4
+ll:
+cmod: #scascaw
+land: fork
+ld
