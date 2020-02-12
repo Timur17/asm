@@ -1,14 +1,56 @@
 #include "asm.h"
 
+void						print_line(t_list *list)
+{
+	t_list		*temp;
+
+	temp = list;
+	while (temp)
+	{
+		printf("%s\n", temp->content);
+		temp = temp->next;
+	}
+}
+
+t_list			*init_list(char *str)
+{
+	t_list	*new;
+
+	if (!(new = (t_list *)ft_memalloc(sizeof(t_list))))
+		ft_error("ERROR malloc");
+	new->content = str;
+	new->content_size = 0;
+	return (new);
+}			
+
+
+void			ft_add_line(t_parce *pr)
+{
+	t_list		*temp;
+	t_list		*new;
+	static int			i;
+
+	new = init_list(pr->line);  
+	temp = pr->list;
+	if (pr->list == NULL)
+		pr->list = new;
+	else
+	{
+		while (temp->next)
+			temp = temp->next;
+		temp->next = new;
+	}
+}
 
 int				read_file(t_parce *pr)
 {
 	int			n;
 
-
 	if ((n = gnl(pr->fd, &pr->line)) == -1)
-		ft_error("Error reading");
+		ft_error("Error reading file");
 	pr->row++;
+	if (n > 0)
+		ft_add_line(pr);
 	return (n);
 }
 
@@ -31,11 +73,7 @@ void	valid_end_line(t_parce *pr, int i)
 	while (ft_space(pr->line[i]))
 		i++;
 	if (pr->line[i] && pr->line[i] != '#')
-	{
-		printf("test %s\n", pr->line + i);
-		printf("row %d i %d\n", pr->row, i);
-		ft_error("ERORR unexpected symbol in the end");
-	}
+		ft_error_pos("ERROR: unexpected symbol", pr->row, *pr->i);
 }
 
 char	*ft_search_end2(t_parce *pr, char *str)
@@ -79,10 +117,7 @@ char	*ft_search_end(t_parce *pr)
 		return(str);
 	}
 	if ((str = ft_search_end2(pr, str)) == NULL)
-	{
-		printf("row %d i %d\n", pr->row, *pr->i);
-		ft_error("Error in whith \"");
-	}
+		ft_error("ERROR: miss ends quotes in name or comment");
 	return(str);
 }
 
@@ -95,11 +130,8 @@ char	*add_name_comment(t_parce *pr)
 	if (pr->line[*pr->i] == '\"')
 		str = ft_search_end(pr);
 	else
-		{
-			printf("row %d i %d\n", pr->row, *pr->i);
-			ft_error("Error in whith \"");
-		}
-return (str);
+		ft_error_pos("EROOR: miss quotes", pr->row, *pr->i);
+	return (str);
 }
 
 char	*add_(t_parce *pr, char *dst, int d, int len)
@@ -110,24 +142,21 @@ char	*add_(t_parce *pr, char *dst, int d, int len)
 	*pr->i = *pr->i + d;
 	if(!(*dst))
 		str = add_name_comment(pr);	
+	else if (d == 5)
+		ft_error_pos("ERROR: unnecessary name", pr->row, -1);
 	else
-		ft_error("ERROR: too much name or comment");
-	if ((length = (ft_strlen(str)) > len))
-		ft_error("ERROR: too big length of name or comment");
+		ft_error_pos("ERROR: unnecessary comment", pr->row, -1);
+	if ((length = (ft_strlen(str)) > len) && len == PROG_NAME_LENGTH)
+		ft_error_pos("ERROR: too big length of name", pr->row, -1);
+	else if ((length = (ft_strlen(str)) > len) && len == COMMENT_LENGTH)
+		ft_error_pos("ERROR: too big length of comment", pr->row, -1);
 	return (str);
 }
 
-int		skip_comment(t_parce *pr)
+void		skip_comment(t_parce *pr)
 {
-	int zero;
-
-	zero = 0;
-	if (pr->line[*pr->i] != '#')
-		return (0);
-	read_file(pr);
-	pr->i = &zero;
-	return (1);
-
+	while (pr->line[*pr->i])
+		(*pr->i)++;
 }
 
 void	parce_name_comment(t_parce *pr, header_t *head)
@@ -139,36 +168,27 @@ void	parce_name_comment(t_parce *pr, header_t *head)
 		i = 0;
 		pr->i = &i;
 		ft_skip_space(pr);
-		if (pr->line[*pr->i] == '#')
-			ft_skip_comment(pr);
-		else if (pr->line[*pr->i] == '\0')
+		if (pr->line[*pr->i] == COMMENT_CHAR || pr->line[*pr->i] == '\0')
 			continue ;
 		else if (ft_strncmp(pr->line + *pr->i, NAME_CMD_STRING, 5) == 0)
 			ft_strcat(head->prog_name, add_(pr, head->prog_name, 5, PROG_NAME_LENGTH));
 		else if (ft_strncmp(pr->line + *pr->i, COMMENT_CMD_STRING, 8) == 0)
-			ft_strcat(head->comment, add_(pr, head->comment, 8, COMMENT_LENGTH));
+		 	ft_strcat(head->comment, add_(pr, head->comment, 8, COMMENT_LENGTH));
 		else if (check_label(pr))
 			add_label(pr);
-		else if (check_command(pr))
-			add_command(pr);
-		else
-		{
-			printf("row %d and collum %d\n", pr->row, *pr->i);
-			ft_error("Unexpected symvol in row %d");
-		}
+		 else if (check_command(pr))
+		 	add_command(pr);
+		else if (pr->line[*pr->i] != '\0')
+			ft_error_pos("ERROR: Unexpected symvol", pr->row, *pr->i);
 	}
-		if (!(*head->prog_name))
-			ft_error("EROOR in name");
-		if (!(*head->comment))
-			ft_error("EROOR in comment");
+	ft_error_head(head);
 }
 
 void	parce(t_parce *pr, header_t *head)
 {	
 	parce_name_comment(pr, head);
-	read_file(pr);
 	printf ("header name=%s\n", head->prog_name);
 	printf ("header comment=%s\n", head->comment);
-	printf ("line=%s\n", pr->line);
 	printt_code(pr->cd);
+//	print_line(pr->list);
 }

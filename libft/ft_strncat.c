@@ -6,7 +6,7 @@
 /*   By: wtorwold <wtorwold@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/21 17:12:05 by wtorwold          #+#    #+#             */
-/*   Updated: 2020/02/08 14:45:25 by wtorwold         ###   ########.fr       */
+/*   Updated: 2020/02/12 16:52:29 by wtorwold         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 char	*ft_strncat(char *dst, const char *src, size_t n)
 {
-	size_t	i;
-	unsigned int		len;
+	size_t		i;
+	size_t		len;
 
 	i = 0;
 	len = ft_strlen(dst);
